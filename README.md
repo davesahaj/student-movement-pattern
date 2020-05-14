@@ -22,7 +22,7 @@ Windows:
 
 ## Meta
 
-Sahaj Dave– [192.168.0.dave](https://fb.me/) 
+Sahaj Dave– [FB](https://fb.me/192.168.0.dave) 
 
 ## Contributing
 
