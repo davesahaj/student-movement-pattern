@@ -22,7 +22,8 @@ Windows:
 
 ## Meta
 
-Sahaj Dave– [FB](https://fb.me/192.168.0.dave) 
+Sahaj Dave – [mail](mailto:201912103@daiict.ac.in)
+Manav Joshi – [mail](mailto:201912102@daiict.ac.in) 
 
 ## Contributing
 
