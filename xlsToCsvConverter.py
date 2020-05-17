@@ -79,7 +79,7 @@ def xlsxToCsvHandler(xls_filename):
                 # Filename to generate the CSV file.
                 fileName = (
                     xls_filename.rsplit("/", 1)[0]
-                    + "/"
+                    + "/csv/"
                     + csv_filename
                     + "-"
                     + shName[sheet_number]
