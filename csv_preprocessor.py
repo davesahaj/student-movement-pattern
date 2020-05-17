@@ -6,8 +6,8 @@ def converter(group):
     for i in group:
         print("creating sheet-"+str(i))
         fname = "data/csv/file-Sheet"+str(i)+".csv"
-        df = pd.read_csv(fname, usecols=["Date", "HH:MM:SS", "Wifi Id"])
-        df.rename(columns={df.columns[1]: "Time"}, inplace=True)
+        df = pd.read_csv(fname)
+        df.rename(columns={df.columns[2]: "Time"}, inplace=True)
 
         dates = []
         time = []
