@@ -1,5 +1,21 @@
 import pandas as pd
-import numpy as np
+import seaborn
+
+
+def get_dom(dt):
+    return dt.day
+
+
+def get_weekday(dt):
+    return dt.weekday()
+
+
+def get_hour(dt):
+    return dt.hour
+
+
+def get_minute(dt):
+    return dt.minute
 
 
 def converter(group):
@@ -12,20 +28,35 @@ def converter(group):
         dates = []
         time = []
 
+        for t in df.Time:
+            t = t[0:8]
+            time.append(t)
+
         for d in df.Date:
             d = d[0:10]
             dates.append(d)
 
-        for t in df.Time:
-            t = t[0:5]
-            time.append(t)
-
         df['Date'] = dates
         df['Time'] = time
+
+        df['Date'] = df[['Date', 'Time']].agg(' '.join, axis=1)
+
         fname = "data/trimmed/file-Sheet"+str(i)+".csv"
 
-        df.to_csv(fname, columns=["Date", "Time",
-                                  "Wifi Id"], index=None, header=None)
+        df['Date'] = df['Date'].map(pd.to_datetime)
+        df['weekday'] = df['Date'].map(get_weekday)
+        df['dom'] = df['Date'].map(get_dom)
+        df['hour'] = df['Date'].map(get_hour)
+        df['minute'] = df['Date'].map(get_minute)
 
-group = [6, 7, 8, 9, 10]
-converter(group)
+        df.sort_values(by=['Date'])
+        df.to_csv(fname, columns=["Date", "Wifi Id", "weekday",
+                                  "dom", "hour", "minute"], index=None)
+
+
+group1 = [6, 7, 8, 9, 10]
+group2 = [3, 4, 5, 14, 16, 19, 20, 21]
+group3 = [2, 13, 11, 15]
+converter(group1)
+converter(group2)
+converter(group3)
