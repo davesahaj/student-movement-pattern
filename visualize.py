@@ -25,7 +25,7 @@ def visual(group):
 
     fname = "data/visual/file-Sheet"+str(i)+".csv"
     df.to_csv(fname, index=None)
-
+ 
 
 group1 = [6, 7, 8, 9, 10]
 group2 = [3, 4, 5, 14, 16, 19, 20, 21]
