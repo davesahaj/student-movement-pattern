@@ -14,8 +14,9 @@ def counter(group):
             rowSeries = df.iloc[i]
             nextRowSeries = df.iloc[i-1]
             if(rowSeries['Wifi Id'] != nextRowSeries['Wifi Id']):
-                # print(rowSeries['Wifi Id'])# this works - prints unique values
-                new_df = new_df.append(rowSeries)  # this doesnt
+                new_df = new_df.append(rowSeries)
+
+            
 
         new_df.to_csv(fname, columns=[
                       "Date", "Wifi Id", "weekday", "dom", "hour", "minute"], index=None)
