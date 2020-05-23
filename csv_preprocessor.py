@@ -1,5 +1,5 @@
 import pandas as pd
-import seaborn
+import os
 
 
 def get_dom(dt):
@@ -24,6 +24,8 @@ def converter(group):
         fname = "data/csv/file-Sheet"+str(i)+".csv"
         df = pd.read_csv(fname)
         df.rename(columns={df.columns[2]: "Time"}, inplace=True)
+        df=df.replace(to_replace ='"Hostel_5GHZ"',value ='"Hostel"') 
+        
 
         dates = []
         time = []
@@ -51,13 +53,13 @@ def converter(group):
         df['Student ID'] = i
 
         df.sort_values(by=['Date'])
-        df.to_csv(fname, columns=["Date", "Wifi Id",'Student ID'], index=None)
+        df.to_csv(fname, columns=["Date", "Wifi Id", 'Student ID'], index=None)
 
 
-group1 = [1,2,3,4,5,6,7,8,9,10
-,11,12,13,14,15,16,17,18,19,20
-,21,22,23,24,25,26,27,28,29,30
-,31,32,33,34,35,36,37,38,39,40
-,41,42,43,44,45,46,47,48,49,50]
+group1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+          26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
 
+
+if not os.path.exists("data/trimmed"):
+    os.mkdir("data/trimmed")
 converter(group1)
