@@ -1,9 +1,11 @@
 import pandas as pd
 import dateutil
+import os
 
 
 def frequency(group):
     interval = [1, 2, 3, 4, 6, 8, 12]
+    wifis = ['Canteen', 'Hostel', 'Event']
     start_hour = '02:00'
     end_hour = '04:00'
     s = []
@@ -31,28 +33,51 @@ def frequency(group):
         if d not in dates:
             dates.append(d)
 
-    for x in dates:
-        frame = (df.loc[df['Date'].dt.date == x])
-        frame.set_index('Date', inplace=True)
-        frame = (frame.loc[frame['Wifi Id'] == '"Canteen"'])
-       
+    frame = pd.DataFrame()
 
-       # frame = (frame.between_time(start_hour, end_hour))
-       # frame = (frame.groupby('Wifi Id').count())
-        frame.to_csv("data/frequency/"+str(x)+".csv")
+    for x in dates:
+        frame = frame.append(df.loc[df['Date'].dt.date == x])
+
+    #frame.set_index('Student ID', inplace=True)
+    frame = frame.sort_values(by='Student ID')
+
+    for folder in wifis:
+        if not os.path.exists("bin/"+folder):
+            os.mkdir("bin/"+folder)
+        
+        
+        final = pd.DataFrame(columns=['Date', 'Student ID', 'Frequency'])
+
+        for d in dates:
+            for s in group:
+                fl = (frame.loc[frame['Wifi Id'] == '"'+folder+'"'])
+                fl = (fl.loc[fl['Date'].dt.date == d])
+                fl = (fl.loc[fl['Student ID'] == s])
+                freq = fl.index
+                freq = len(freq)
+
+                final = final.append(
+                    {'Date': d, 'Student ID': s, 'Frequency': freq}, ignore_index=True)
+
+
+##############
+        final.to_csv("bin/"+folder+"/"+str(folder)+".csv", index=None)
+
+
+##############
+
+   # frame = (frame.between_time(start_hour, end_hour))
+   # frame = (frame.groupby('Wifi Id').count())
+   # frame.to_csv("data/frequency/"+str(x)+".csv")
 
     # df.to_csv("out.csv")
 
-
-group1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-          26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50]
-
-
-
+group1 = [6, 7, 8, 9, 10]
 group2 = [3, 4, 5, 14, 16, 19, 20, 21]
 group3 = [2, 13, 11, 15]
 
-frequency(group1)
+if not os.path.exists("bin"):
+    os.mkdir("bin")
 # frequency(group1)
 # frequency(group2)
-# frequency(group3)
+frequency(group3)
