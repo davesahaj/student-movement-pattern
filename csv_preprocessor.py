@@ -24,8 +24,14 @@ def converter(group):
         fname = "data/csv/file-Sheet"+str(i)+".csv"
         df = pd.read_csv(fname)
         df.rename(columns={df.columns[2]: "Time"}, inplace=True)
-        df=df.replace(to_replace ='"Hostel_5GHZ"',value ='"Hostel"') 
-        
+        df = df.replace(to_replace='"Hostel_5GHZ"', value='"Hostel"')
+        df = df.replace(to_replace='"CEID"', value='"CEP"')
+        df = df.replace(to_replace='"CEID_5G"', value='"CEP"')
+        df = df.replace(to_replace='"Lab-204"', value='"LAB"')
+        df = df.replace(to_replace='"Lab201-202"', value='"LAB"')
+        df = df.replace(to_replace='"DARCFF"', value='"RC"')
+        df = df.replace(to_replace='"MSC-IT"', value='"CEP"')
+        df = df.replace(to_replace='"Event"', value='"LT"')
 
         dates = []
         time = []
