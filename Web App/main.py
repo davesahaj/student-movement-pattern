@@ -5,101 +5,100 @@ from dash.dependencies import Input, Output
 
 import pandas as pd
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+css = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__, external_stylesheets=css)
 
-df = pd.read_csv('country_indicators.csv')
+df = pd.read_excel('test.xlsx')
+df['Date'] = df['Date'].astype('datetime64[ns]')
+df = df.sort_values(by='Date')
 
-available_indicators = df['Indicator Name'].unique()
+#locations = df['Wifi Id'].unique()
+locations = ['"Canteen"', '"Hostel"', '"CEP"', '"LAB"', '"RC"', '"LT"']
+students = df['Student ID'].unique()
+dates = df['Date'].dt.date.unique()
+dates.astype('datetime64[ns]')
+
+
+#dates = [x for x in range(len(df['Date'].unique()))]
+
+print(type(dates))
 
 app.layout = html.Div([
+
     html.Div([
+        html.Label("Select Location:"),
+        dcc.Dropdown(
+            id='l-id',
+            options=[{'label': i, 'value': i}
+                     for i in locations],
+            value=''
+        )
+    ],
+        style={'width': '30%', 'display': 'inline-block', 'padding': '5px'}),
 
-        html.Div([
-            dcc.Dropdown(
-                id='xaxis-column',
-                options=[{'label': i, 'value': i}
-                         for i in available_indicators],
-                value='Fertility rate, total (births per woman)'
-            ),
-            dcc.RadioItems(
-                id='xaxis-type',
-                options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
-                value='Linear',
-                labelStyle={'display': 'inline-block'}
-            )
-        ],
-            style={'width': '48%', 'display': 'inline-block'}),
 
-        html.Div([
-            dcc.Dropdown(
-                id='yaxis-column',
-                options=[{'label': i, 'value': i}
-                         for i in available_indicators],
-                value='Life expectancy at birth, total (years)'
-            ),
-            dcc.RadioItems(
-                id='yaxis-type',
-                options=[{'label': i, 'value': i} for i in ['Linear', 'Log']],
-                value='Linear',
-                labelStyle={'display': 'inline-block'}
-            )
-        ], style={'width': '48%', 'float': 'right', 'display': 'inline-block'})
-    ]),
+    html.Div([
+        html.Label("Select Student:"),
+        dcc.Dropdown(
+            id='s-id',
+            options=[{'label': i, 'value': i}
+                     for i in students],
+            value=''
+        )
+    ],
+        style={'width': '30%', 'display': 'inline-block', 'padding': '5px'}),
 
-    dcc.Graph(id='indicator-graphic'),
-
-    dcc.Slider(
-        id='year--slider',
-        min=df['Year'].min(),
-        max=df['Year'].max(),
-        value=df['Year'].max(),
-        marks={str(year): str(year) for year in df['Year'].unique()},
-        step=None
-    )
+    html.Div([
+        html.Label("Select Date:"),
+        dcc.Dropdown(
+            id='d-id',
+            options=[{'label': i, 'value': i}
+                     for i in dates],
+            value=''
+        )
+    ],
+        style={'width': '30%', 'display': 'inline-block', 'padding': '5px'}),
+    html.Div(id='output'),
+    html.Br(),
+    dcc.Graph(id='s-graph')
 ])
 
 
 @app.callback(
-    Output('indicator-graphic', 'figure'),
-    [Input('xaxis-column', 'value'),
-     Input('yaxis-column', 'value'),
-     Input('xaxis-type', 'value'),
-     Input('yaxis-type', 'value'),
-     Input('year--slider', 'value')])
-def update_graph(xaxis_column_name, yaxis_column_name,
-                 xaxis_type, yaxis_type,
-                 year_value):
-    dff = df[df['Year'] == year_value]
+    Output('s-graph', 'figure'),
+    [Input('l-id', 'value'),
+     Input('s-id', 'value'),
+     Input('d-id', 'value')]
+)
+def update_graph(lid, sid, did):
 
     return {
-        'data': [dict(
-            x=dff[dff['Indicator Name'] == xaxis_column_name]['Value'],
-            y=dff[dff['Indicator Name'] == yaxis_column_name]['Value'],
-            text=dff[dff['Indicator Name'] ==
-                     yaxis_column_name]['Country Name'],
-            mode='markers',
-            marker={
-                'size': 15,
-                'opacity': 0.5,
-                'line': {'width': 0.5, 'color': 'white'}
-            }
-        )],
-        'layout': dict(
-            xaxis={
-                'title': xaxis_column_name,
-                'type': 'linear' if xaxis_type == 'Linear' else 'log'
-            },
-            yaxis={
-                'title': yaxis_column_name,
-                'type': 'linear' if yaxis_type == 'Linear' else 'log'
-            },
-            margin={'l': 40, 'b': 40, 't': 10, 'r': 0},
-            hovermode='closest'
-        )
+        'data': [dict(x=[lid],
+                      y=[findFrequency(lid,sid,did)])],
+        'layout': dict()
     }
+
+
+def findFrequency(lid, sid, did):
+    dff = df
+    fl = dff.loc[dff['Wifi Id'] == lid]
+    fl = fl.loc[fl['Student ID'] == sid]
+    fl = fl.loc[fl['Date'].dt.date == pd.to_datetime(did)]
+    print(fl.info)
+    freq = fl.index
+    freq = len(freq)
+    return (freq)
 
 
 if __name__ == '__main__':
     app.run_server(debug=True)
+
+    # dcc.Slider(
+    #   id='date-slider',
+    #  min=df['Date'].dt.date.min(),
+    # max = df['Date'].dt.date.max(),
+    # value=df['Date'].dt.date.max(),
+    #  marks ={str(date):str(date) for date in df['Date'].dt.date.unique()},
+    # step=None
+    # )
