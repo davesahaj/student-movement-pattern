@@ -119,7 +119,6 @@ def update_graph(sid):
     fig = go.Figure(data=[lab, lt, rc, cep, hostel, canteen], layout=layout)
     return fig
 
-
 def findFrequency(lid, sid):
     dff = df
     fl = dff.loc[dff['Wifi Id'] == lid]
