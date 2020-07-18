@@ -6,26 +6,32 @@ import pandas as pd
 
 @app.route('/')
 def home():
+    df = pd.read_excel('test.xlsx')
+    df['Date'] = df['Date'].astype('datetime64[ns]')
+    df = df.sort_values(by='Date')
+
+    #locations = df['Wifi Id'].unique()
+    locations = ['"Canteen"', '"Hostel"', '"CEP"', '"LAB"', '"RC"', '"LT"']
+    students = df['Student ID'].unique()
+    dates = df['Date'].dt.date.unique()
+    dates.astype('datetime64[ns]')
 
     user = {'username': 'sahaj'}
     return render_template('basic_operations.html', title='Home', user=user)
 
 
-@app.route('/sum', methods=['POST'])
-def sum_num():
-    print("Sum function")
-    rf = request.form
-    print(rf)
-    for key in rf.keys():
-        data = key
-    print(data)
-    data_dic = json.loads(data)
-    print(data_dic.keys())
-    sum_data = data_dic['sum']
-    sumd = 0
-    for _ in sum_data:
-        sumd += _
-    resp_dic = {'sum': sumd, 'msg': 'Sum performed'}
-    resp = jsonify(resp_dic)
-    resp.headers['Access-Control-Allow-Origin'] = '*'
-    return resp
+@app.route("/home")
+def guestbook():
+
+    return render_template("basic_operations.html")
+
+
+@app.route("/guestbook/create-entry", methods=["POST"])
+def create_entry():
+
+    req = request.get_json()
+    print(req)
+
+    res = make_response(jsonify(req), 200)
+
+    return res
