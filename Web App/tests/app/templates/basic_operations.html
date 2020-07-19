@@ -4,13 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <!-- font awesone -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+      crossorigin="anonymous"
+    />
+    <!-- bootstrap -->
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
       integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
       crossorigin="anonymous"
     />
+    <!-- jquery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- plotly -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.33.1/plotly.min.js"></script>
   </head>
   <body>
     {% block main %}
@@ -18,37 +29,33 @@
       <div class="container">
         <div class="row">
           <div class="col">
-            <h1>Guestbook</h1>
+            <h1>STUDENT MOVEMENT ANALYSIS</h1>
             <hr />
 
             <div class="mb-3">
               <div class="form-group">
-                <label>Name</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="num"
-                  placeholder="Student ID"
-                />
+                <label>Student ID</label>
+                <select name="" id="student_id" class="form-control"></select>
               </div>
 
               <div class="form-group">
-                <label>Message</label>
-                <textarea
-                  class="form-control"
-                  id="message"
-                  cols="30"
-                  rows="3"
-                  placeholder="Your message"
-                ></textarea>
+                <label>Location ID</label>
+                <select name="" id="wifi_id" class="form-control"></select>
+              </div>
+
+              <div class="form-group">
+                <label for="">Chart</label>
+                <div id="chart1">
+                  <!-- Plotly chart will be drawn inside this DIV -->
+                </div>
               </div>
 
               <button
-                class="btn btn-primary"
+                class="btn btn-outline-primary"
                 id="submit"
                 onclick="submit_message();"
               >
-                Submit message
+                Submit
               </button>
             </div>
 
@@ -63,39 +70,89 @@
     {% endblock %} {% block script %}
 
     <script>
+      // server intregation
       function submit_message() {
-       let num = document.getElementById("num");
+      let wifi_id = document.getElementById("wifi_id");
+      let student_id =document.getElementById("student_id");
 
-        var entry = {
-          num: num.value
-        };
+      var entry = {
+      student_id:student_id.value,
+      wifi_id: wifi_id.value
+      };
 
-        fetch(`${window.origin}/guestbook/create-entry`, {
-          method: "POST",
-          credentials: "include",
-          body: JSON.stringify(entry),
-          cache: "no-cache",
-          headers: new Headers({
-            "content-type": "application/json",
-          }),
-        })
-          .then(function (response) {
-            if (response.status !== 200) {
-              console.log(
-                `Looks like there was a problem. Status code: ${response.status}`
-              );
-              return;
-            }
-            response.json().then(function (data) {
-              console.log(data);
-              let div = document.getElementById("messages");
-              div.innerHTML = "Student ID is: "+JSON.stringify(data);
-            });
-          })
-          .catch(function (error) {
-            console.log("Fetch error: " + error);
-          });
+      fetch(`${window.origin}/locationwise`, {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(entry),
+      cache: "no-cache",
+      headers: new Headers({
+      "content-type": "application/json",
+      }),
+      })
+      .then(function (response) {
+      if (response.status !== 200) {
+      console.log(
+      `Looks like there was a problem. Status code: ${response.status}`
+      );
+      return;
       }
+      response.json().then(function (data) {
+      console.log(data);
+      let div = document.getElementById("messages");
+      div.innerHTML = JSON.stringify(data);
+      });
+      })
+      .catch(function (error) {
+      console.log("Fetch error: " + error);
+      });
+      }
+
+      // plotly chart
+      let trace1 = {
+      x: [1, 2, 3, 4],
+      y: [10, 15, 13, 17],
+      type: 'scatter'
+      };
+
+      let trace2 = {
+      x: [1, 2, 3, 4],
+      y: [16, 5, 11, 9],
+      type: 'scatter'
+      };
+
+      let data = [trace1, trace2];
+
+      Plotly.newPlot('chart1', data);
+
+        // populate IDs
+      function populate_student(data)
+      {
+      let dropdown = document.getElementById("student_id")
+      dropdown.length =0
+
+      let option
+      for (let i = 0;i<data.length;i++)
+      {
+      option = document.createElement('option')
+      option.text= data[i]
+      dropdown.add(option)
+      }
+      }
+      function populate_wifi(data) {
+      let dropdown = document.getElementById("wifi_id")
+      dropdown.length =0
+
+      let option
+      for (let i = 0;i<data.length;i++)
+      {
+      option = document.createElement('option')
+      option.text= data[i]
+      dropdown.add(option)
+      }
+      }
+
+      populate_wifi({{ wifi_ids|safe }});
+      populate_student({{ student_ids|safe }});
     </script>
 
     {% endblock %}

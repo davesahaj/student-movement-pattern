@@ -97,7 +97,7 @@ def frequency(group):
 #################
         final = pd.DataFrame(columns=['Frequency'])
 
-        fl = (frame.loc[frame['Wifi Id'] == '"'+folder+'"'])
+        fl = (frame.loc[frame['Wifi Id'] == folder])
        # fl = (fl.loc[fl['Date'].dt.date == pd.to_datetime('2018-10-10')])
         fl = (fl.loc[(fl['Date'].dt.hour == 6) | (
             fl['Date'].dt.hour == 7) | (fl['Date'].dt.hour == 8)])
