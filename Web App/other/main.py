@@ -14,7 +14,8 @@ df['Date'] = df['Date'].astype('datetime64[ns]')
 df = df.sort_values(by='Date')
 
 #locations = df['Wifi Id'].unique()
-locations = ['"Canteen"', '"Hostel"', '"CEP"', '"LAB"', '"RC"', '"LT"']
+locations = ['Canteen', 'Hostel', 'CEP', 'LAB', 'RC', 'LT']
+
 students = df['Student ID'].unique()
 dates = df['Date'].dt.date.unique()
 dates.astype('datetime64[ns]')
@@ -75,7 +76,7 @@ def update_graph(lid, sid, did):
 
     return {
         'data': [dict(x=[lid],
-                      y=[findFrequency(lid,sid,did)])],
+                      y=[findFrequency(lid, sid, did)])],
         'layout': dict()
     }
 

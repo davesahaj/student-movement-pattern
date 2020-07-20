@@ -1,160 +1,544 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <!-- font awesone -->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-      integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
-      crossorigin="anonymous"
-    />
-    <!-- bootstrap -->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-      crossorigin="anonymous"
-    />
-    <!-- jquery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <!-- plotly -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.33.1/plotly.min.js"></script>
-  </head>
-  <body>
-    {% block main %}
-    <main>
-      <div class="container">
-        <div class="row">
-          <div class="col">
-            <h1>STUDENT MOVEMENT ANALYSIS</h1>
-            <hr />
 
-            <div class="mb-3">
-              <div class="form-group">
-                <label>Student ID</label>
-                <select name="" id="student_id" class="form-control"></select>
-              </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <!-- font awesone -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+  <!-- jquery -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!-- plotly -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.33.1/plotly.min.js"></script>
+</head>
 
-              <div class="form-group">
-                <label>Location ID</label>
-                <select name="" id="wifi_id" class="form-control"></select>
-              </div>
+<body>
+  {% block main %}
+  <main>
+    <div class="container-fluid">
+      <h1>STUDENT MOVEMENT ANALYSIS (ALPHA)</h1>
+      <hr>
+      <div class="container-fluid"></div>
+      <div class="row">
+        <div class="col-sm">
+          <blockquote class="blockquote">
+            <p class="mb-0">Select Type:</p>
+          </blockquote>
+        </div>
+      </div>
+      <br />
+      <div class="row">
+        <div class="col-sm-4" id="radioGroup">
+          <div class="custom-control custom-radio">
+            <input type="radio" id="student" value=0 name="rb" class="custom-control-input" />
+            <label class="custom-control-label lead" for="student">Student</label>
+          </div>
 
-              <div class="form-group">
-                <label for="">Chart</label>
-                <div id="chart1">
-                  <!-- Plotly chart will be drawn inside this DIV -->
-                </div>
-              </div>
+          <div class="custom-control custom-radio">
+            <input type="radio" id="wifilocation" value=1 name="rb" class="custom-control-input" />
+            <label class="custom-control-label lead" for="wifilocation">Wifi Locations</label>
+          </div>
 
-              <button
-                class="btn btn-outline-primary"
-                id="submit"
-                onclick="submit_message();"
-              >
-                Submit
-              </button>
+          <div class="custom-control custom-radio">
+            <input type="radio" id="weekdays" value=2 name="rb" class="custom-control-input" />
+            <label class="custom-control-label lead" for="weekdays">Week Days</label>
+          </div>
+          <div class="custom-control p-5">
+            <button type="button" class="btn btn-primary" id="chart-button" onclick="submit_message()">Submit
+            </button>
+
+            <div class="spinner-border spinner-border-sm" id="chart-spinner" role="status">
+              <span class="sr-only">Loading...</span>
             </div>
 
-            <h3>Messages</h3>
-            <hr />
+          </div>
+        </div>
 
-            <div class="mb-3" id="messages"></div>
+        <div class="col-sm-8" id="filter-div">
+          <div id="">
+            <div class="form-group input-group-sm">
+            </div>
+            <div class="form-group input-group-sm">
+              <select id="student_id" class="custom-select"></select>
+            </div>
+
+            <div class="form-group input-group-sm">
+              <select id="wifi_id" class="custom-select"></select>
+            </div>
+
+            <div class="form-group input-group-sm">
+              <select id="weekday_id" class="custom-select">
+                <option value="0">Monday</option>
+                <option value="1">Tuesday</option>
+                <option value="2">Wednesday</option>
+                <option value="3">Thursday</option>
+                <option value="4">Friday</option>
+                <option value="5">Saturday</option>
+                <option value="6">Sunday</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="">
+
+            <div class="form-group input-group-sm">
+            </div>
+
+            <div class="form-group input-group-sm">
+              <label class="lead">Filter by:</label>
+              <select id="filter-select" class="custom-select">
+
+
+              </select>
+            </div>
+
           </div>
         </div>
       </div>
-    </main>
-    {% endblock %} {% block script %}
+      <br>
 
-    <script>
-      // server intregation
-      function submit_message() {
-      let wifi_id = document.getElementById("wifi_id");
-      let student_id =document.getElementById("student_id");
+      <div id="chart1">
 
-      var entry = {
-      student_id:student_id.value,
-      wifi_id: wifi_id.value
-      };
+      </div>
+    </div>
+    </div>
+  </main>
+  {% endblock %} {% block script %}
 
-      fetch(`${window.origin}/locationwise`, {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify(entry),
-      cache: "no-cache",
-      headers: new Headers({
-      "content-type": "application/json",
-      }),
-      })
-      .then(function (response) {
-      if (response.status !== 200) {
-      console.log(
-      `Looks like there was a problem. Status code: ${response.status}`
-      );
-      return;
-      }
-      response.json().then(function (data) {
-      console.log(data);
-      let div = document.getElementById("messages");
-      div.innerHTML = JSON.stringify(data);
-      });
-      })
-      .catch(function (error) {
-      console.log("Fetch error: " + error);
-      });
-      }
+  <script>
 
-      // plotly chart
-      let trace1 = {
-      x: [1, 2, 3, 4],
-      y: [10, 15, 13, 17],
-      type: 'scatter'
-      };
+    //onload
+    $("#filter-div").hide();
+    $("#chart-spinner").hide();
+    //end onload
 
-      let trace2 = {
-      x: [1, 2, 3, 4],
-      y: [16, 5, 11, 9],
-      type: 'scatter'
-      };
 
-      let data = [trace1, trace2];
+    // server intregation
+    function submit_message() {
 
-      Plotly.newPlot('chart1', data);
 
-        // populate IDs
-      function populate_student(data)
+      //radio option
+      let radioOption = $('#radioGroup input:radio:checked').val()
+      let filterSelect = $('#filter-select').val()
+      $("#chart-spinner").show();
+      $("#chart-button").attr('disabled', 'disabled'); //or $("#Button1Id").prop('disabled',true);
+
+
+      if (radioOption == 0)//student
       {
+        let student_id = document.getElementById("student_id");
+        if (filterSelect == "location") {
+
+          let entry = {
+            student_id: student_id.value,
+            "filter": "location"
+          };
+
+          fetch(`${window.origin}/studentwise`, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(entry),
+            cache: "no-cache",
+            headers: new Headers({
+              "content-type": "application/json",
+            }),
+          })
+            .then(function (response) {
+              if (response.status !== 200) {
+                console.log(
+                  `Looks like there was a problem. Status code: ${response.status}`
+                );
+                return;
+              }
+              response.json().then(function (data) {
+                console.log(data);
+                makeChart(data, "students_location")
+
+              });
+            })
+            .catch(function (error) {
+              console.log("Fetch error: " + error);
+            });
+
+        }
+
+        if (filterSelect == "weekdays") {
+
+          let entry = {
+            student_id: student_id.value,
+            "filter": "weekdays"
+          };
+
+          fetch(`${window.origin}/studentwise`, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(entry),
+            cache: "no-cache",
+            headers: new Headers({
+              "content-type": "application/json",
+            }),
+          })
+            .then(function (response) {
+              if (response.status !== 200) {
+                console.log(
+                  `Looks like there was a problem. Status code: ${response.status}`
+                );
+                return;
+              }
+              response.json().then(function (data) {
+                console.log(data);
+                makeChart(data, "students_weekdays")
+
+              });
+            })
+            .catch(function (error) {
+              console.log("Fetch error: " + error);
+            });
+
+        }
+
+      }
+      if (radioOption == 1)//wifi location
+      {
+        let wifi_id = document.getElementById("wifi_id");
+
+
+        if (filterSelect == "students") {
+
+          let entry = {
+            wifi_id: wifi_id.value,
+            "filter": "students"
+          };
+
+          fetch(`${window.origin}/locationwise`, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(entry),
+            cache: "no-cache",
+            headers: new Headers({
+              "content-type": "application/json",
+            }),
+          })
+            .then(function (response) {
+              if (response.status !== 200) {
+                console.log(
+                  `Looks like there was a problem. Status code: ${response.status}`
+                );
+                return;
+              }
+              response.json().then(function (data) {
+                console.log(data);
+                makeChart(data, "location_students")
+
+              });
+            })
+            .catch(function (error) {
+              console.log("Fetch error: " + error);
+            });
+
+        }
+
+        if (filterSelect == "weekdays") {
+
+          let entry = {
+            wifi_id: wifi_id.value,
+            "filter": "weekdays"
+          };
+
+          fetch(`${window.origin}/locationwise`, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(entry),
+            cache: "no-cache",
+            headers: new Headers({
+              "content-type": "application/json",
+            }),
+          })
+            .then(function (response) {
+              if (response.status !== 200) {
+                console.log(
+                  `Looks like there was a problem. Status code: ${response.status}`
+                );
+                return;
+              }
+              response.json().then(function (data) {
+                console.log(data);
+                makeChart(data, "location_weekdays")
+
+              });
+            })
+            .catch(function (error) {
+              console.log("Fetch error: " + error);
+            });
+
+        }
+
+      }
+      if (radioOption == 2)//weekday
+      {
+        let weekday_id = document.getElementById("weekday_id");
+        if (filterSelect == "location") {
+          let entry = {
+            weekday_id: weekday_id.value,
+            "filter": "location"
+          };
+
+          fetch(`${window.origin}/weekdaywise`, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(entry),
+            cache: "no-cache",
+            headers: new Headers({
+              "content-type": "application/json",
+            }),
+          })
+            .then(function (response) {
+              if (response.status !== 200) {
+                console.log(
+                  `Looks like there was a problem. Status code: ${response.status}`
+                );
+                return;
+              }
+              response.json().then(function (data) {
+                console.log(data);
+                makeChart(data, "students_location")
+
+              });
+            })
+            .catch(function (error) {
+              console.log("Fetch error: " + error);
+            });
+
+        }
+
+        if (filterSelect == "weekdays") {
+
+          let entry = {
+            student_id: student_id.value,
+            "filter": "weekdays"
+          };
+
+          fetch(`${window.origin}/studentwise`, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(entry),
+            cache: "no-cache",
+            headers: new Headers({
+              "content-type": "application/json",
+            }),
+          })
+            .then(function (response) {
+              if (response.status !== 200) {
+                console.log(
+                  `Looks like there was a problem. Status code: ${response.status}`
+                );
+                return;
+              }
+              response.json().then(function (data) {
+                console.log(data);
+                makeChart(data, "students_weekdays")
+
+              });
+            })
+            .catch(function (error) {
+              console.log("Fetch error: " + error);
+            });
+
+        }
+
+      }
+
+
+    }
+    //end server intregation
+
+    // populate IDs
+    function populate_student(data) {
       let dropdown = document.getElementById("student_id")
-      dropdown.length =0
+      dropdown.length = 0
 
       let option
-      for (let i = 0;i<data.length;i++)
-      {
-      option = document.createElement('option')
-      option.text= data[i]
-      dropdown.add(option)
+      for (let i = 0; i < data.length; i++) {
+        option = document.createElement('option')
+        option.text = data[i]
+        dropdown.add(option)
       }
-      }
-      function populate_wifi(data) {
+    }
+    function populate_wifi(data) {
       let dropdown = document.getElementById("wifi_id")
-      dropdown.length =0
+      dropdown.length = 0
 
       let option
-      for (let i = 0;i<data.length;i++)
-      {
-      option = document.createElement('option')
-      option.text= data[i]
-      dropdown.add(option)
+      for (let i = 0; i < data.length; i++) {
+        option = document.createElement('option')
+        option.text = data[i]
+        dropdown.add(option)
       }
+    }
+    //end populate
+
+    //radio buttons selection
+    $("#student").click(function () {
+      $("#wifi_id").hide();
+      $("#student_id").show();
+      $("#weekday_id").hide();
+      $("#filter-div").show();
+
+      $("#filter-select").empty()
+        .append('<option selected="selected" value="location">Wifi Location</option><option value="weekdays">Week Days</option>');
+
+    });
+    $("#wifilocation").click(function () {
+      $("#student_id").hide();
+      $("#wifi_id").show();
+      $("#weekday_id").hide();
+      $("#filter-div").show();
+
+      $("#filter-select").empty()
+        .append('<option selected="selected" value="students">Students</option><option value="weekdays">Week Days</option>');
+
+    });
+    $("#weekdays").click(function () {
+      $("#student_id").hide();
+      $("#wifi_id").hide();
+      $("#weekday_id").show();
+
+      $("#filter-div").show();
+
+      $("#filter-select").empty()
+        .append('<option selected="selected" value="location">Wifi Location</option><option value="students">Students</option>');
+
+    });
+    //end radio buttons
+
+    // plotly chart
+    function makeChart(xydata, filter) {
+
+
+      if (filter == "students_location") {
+        let trace1 = {
+          x: xydata[0],
+          y: xydata[1],
+          type: 'bar'
+        };
+
+        let data = [trace1];
+
+        let layout = {
+          title: 'Bar Plot'
+        };
+
+
+        Plotly.newPlot('chart1', data, layout);
+
+
+
       }
 
-      populate_wifi({{ wifi_ids|safe }});
-      populate_student({{ student_ids|safe }});
-    </script>
+      if (filter == "students_weekdays") {
+        let canteen = {
+          x: xydata[0], y: xydata[1][0],
+          mode: 'lines+markers',
+          name: "Canteen"
+        }
+        let hostel = {
+          x: xydata[0], y: xydata[1][1],
+          mode: 'lines+markers',
+          name: "Hostel"
+        }
+        let cep = {
+          x: xydata[0], y: xydata[1][2],
+          mode: 'lines+markers',
+          name: "CEP"
+        }
+        let lab = {
+          x: xydata[0], y: xydata[1][3],
+          mode: 'lines+markers',
+          name: "LAB"
+        }
+        let rc = {
+          x: xydata[0], y: xydata[1][4],
+          mode: 'lines+markers',
+          name: "RC"
+        }
+        let lt = {
+          x: xydata[0], y: xydata[1][5],
+          mode: 'lines+markers',
+          name: "LT"
+        }
 
-    {% endblock %}
-  </body>
+
+        let data = [canteen, lab, rc, lt, hostel, cep];
+
+        let layout = {
+          title: 'Line Plot'
+        };
+
+
+
+        Plotly.newPlot('chart1', data, layout);
+
+      }
+      
+      
+      if (filter == "location_students") {
+        let trace1 = {
+          x: xydata[0],
+          y: xydata[1],
+          type: 'bar'
+        };
+
+        let data = [trace1];
+
+        let layout = {
+          title: 'Bar Plot'
+        };
+
+
+        Plotly.newPlot('chart1', data, layout);
+
+
+
+      }
+
+      if (filter == "location_weekdays") {
+        let loc = {
+          x: xydata[0], y: xydata[1][0],
+          mode: 'lines+markers',
+          
+        }
+        
+
+        let data = [loc];
+
+        let layout = {
+          title: 'Line Plot'
+        };
+
+        Plotly.newPlot('chart1', data, layout);
+
+      }
+      
+      
+      
+      
+      
+      $("#chart-spinner").hide();
+      $("#chart-button").removeAttr('disabled'); //Use '#' id selector
+    }
+    //end chart
+
+
+    populate_wifi({{ wifi_ids| safe }});
+    populate_student({{ student_ids| safe }});
+  </script>
+
+  {% endblock %}
+</body>
+
 </html>

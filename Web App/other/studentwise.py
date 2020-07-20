@@ -20,7 +20,8 @@ df = pd.read_excel('test.xlsx')
 
 df['Date'] = df['Date'].astype('datetime64[ns]')
 df = df.sort_values(by='Date')
-locations = ['"Canteen"', '"Hostel"', '"CEP"', '"LAB"', '"RC"', '"LT"']
+locations = ['Canteen', 'Hostel', 'CEP', 'LAB', 'RC', 'LT']
+
 students = df['Student ID'].unique()
 students.sort()
 students_mark = {i+1: str(students[i]) for i in range(0, len(students))}
@@ -75,7 +76,7 @@ def update_graph(sid):
     # https://plotly.com/python/reference/#scatter-marker
 
    # trace_1 = go.Bar(x=xdata, y=ydata,name='Frequency', opacity=0.7)
-    
+
     trace_2 = go.Scatter(showlegend=False,
                          mode="markers+lines",
                          x=xdata,
@@ -87,17 +88,16 @@ def update_graph(sid):
     # Setting Graph Layout
     layout = dict(
         xaxis={'title': 'Wifi Locations'},
-        yaxis={'title': 'Frequency','range':[0,480]},
+        yaxis={'title': 'Frequency', 'range': [0, 480]},
         title='Student Wise Frequency',
         hovermode='closest',
         plot_bgcolor='#ddd',
         paper_bgcolor='#eee',
         autosize=True,
-        transition={'duration': 300,'easing': 'cubic-in-out'}
+        transition={'duration': 300, 'easing': 'cubic-in-out'}
     )
 
     fig = go.Figure(data=[trace_2], layout=layout)
-
 
     return fig
 
@@ -109,6 +109,8 @@ def findFrequency(lid, sid):
    # print(fl.info)
     freq = fl.index
     freq = len(freq)
+    print("frequency for "+lid+" is "+str(freq))
+
     return (freq)
 
 

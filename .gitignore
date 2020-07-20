@@ -1,3 +1,6 @@
 .vscode/settings.json
 .gitignore
-data/file.xlsx
+data/
+bin/
+*.csv
+*.xlsx

@@ -20,7 +20,7 @@ df = pd.read_excel('test.xlsx')
 
 df['Date'] = df['Date'].astype('datetime64[ns]')
 df = df.sort_values(by='Date')
-locations = ['"Canteen"', '"Hostel"', '"CEP"', '"LAB"', '"RC"', '"LT"']
+locations = ['Canteen', 'Hostel', 'CEP', 'LAB', 'RC', 'LT']
 students = df['Student ID'].unique()
 students.sort()
 dates = df['Date'].dt.date.unique()
