@@ -5,13 +5,14 @@ import pandas as pd
 import numpy as np
 
 ###############################
-# PREPROCESSING FUNCTIONS     #
+#   PREPROCESSING FUNCTIONS   #
 ###############################
 
 
 def findFrequency(lid, sid):
     fl = df.loc[df['Wifi Id'] == lid]
     fl = fl.loc[fl['Student ID'] == sid]
+    
     freq = fl.index
     freq = len(freq)
     return (freq)
@@ -49,6 +50,10 @@ def get_weekday(dt):
     return dt.day_name()
 
 
+def get_date(dt):
+    return dt.date()
+
+
 def get_hour(dt):
     return dt.hour
 
@@ -79,7 +84,6 @@ students.sort()
 students_tmp = []
 for i in students:
     students_tmp.append(i)
-print(students_tmp)
 
 # Dates list
 dates = df['Date'].dt.date.unique()

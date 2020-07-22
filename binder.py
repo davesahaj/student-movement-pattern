@@ -11,7 +11,7 @@ df = pd.read_csv(sheets[0])
 itrfile = iter(sheets)
 next(itrfile)
 
-for x in sheets:
+for x in sheets[1:]:
     print(x)
     df1 = pd.read_csv(x)
     df = df.append(df1)

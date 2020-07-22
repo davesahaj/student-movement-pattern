@@ -18,97 +18,91 @@
 </head>
 
 <body>
-  {% block main %}
-  <main>
-    <div class="container-fluid">
-      <h1>STUDENT MOVEMENT ANALYSIS (ALPHA)</h1>
-      <hr>
-      <div class="container-fluid"></div>
-      <div class="row">
-        <div class="col-sm">
-          <blockquote class="blockquote">
+  <div class="container-fluid">
+    <div class="row bg-light">
+      <h3 class="text-left bg-light rounded shadow p-1 w-100 sticky-top">
+        <img src="../static/images/logo.png" width="80" height="80 " width alt="DAIICT Logo">
+        STUDENT MOVEMENT ANALYSIS
+      </h3>
+      <div class="col-md-12">
+        
+        <div class="row p-1 ">
+          <div class="col-md-3 bg-light border rounded-lg shadow"
+          >
             <p class="mb-0">Select Type:</p>
-          </blockquote>
-        </div>
-      </div>
-      <br />
-      <div class="row">
-        <div class="col-sm-4" id="radioGroup">
-          <div class="custom-control custom-radio">
-            <input type="radio" id="student" value=0 name="rb" class="custom-control-input" />
-            <label class="custom-control-label lead" for="student">Student</label>
+
+            <br />
+
+            <div id="radioGroup">
+              <div class="custom-control custom-radio">
+                <input type="radio" id="student" value="0" name="rb" class="custom-control-input" />
+                <label class="custom-control-label lead" for="student">Student</label>
+              </div>
+
+              <div class="custom-control custom-radio">
+                <input type="radio" id="wifilocation" value="1" name="rb" class="custom-control-input" />
+                <label class="custom-control-label lead" for="wifilocation">Wifi Locations</label>
+              </div>
+
+              <div class="custom-control custom-radio">
+                <input type="radio" id="weekdays" value="2" name="rb" class="custom-control-input" />
+                <label class="custom-control-label lead" for="weekdays">Week Days</label>
+              </div>
+            </div>
+
+            <div id="filter-div">
+              <div id="">
+                <div class="form-group input-group-sm"></div>
+                <div class="form-group input-group-sm">
+                  <select id="student_id" class="custom-select"></select>
+                </div>
+
+                <div class="form-group input-group-sm">
+                  <select id="wifi_id" class="custom-select"></select>
+                </div>
+
+                <div class="form-group input-group-sm">
+                  <select id="weekday_id" class="custom-select">
+                    <option value="0">Monday</option>
+                    <option value="1">Tuesday</option>
+                    <option value="2">Wednesday</option>
+                    <option value="3">Thursday</option>
+                    <option value="4">Friday</option>
+                    <option value="5">Saturday</option>
+                    <option value="6">Sunday</option>
+                  </select>
+                </div>
+              </div>
+
+              <div id="">
+                <div class="form-group input-group-sm"></div>
+
+                <div class="form-group input-group-sm">
+                  <label class="lead">Filter by:</label>
+                  <select id="filter-select" class="custom-select"> </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="custom-control p-5">
+              <button type="button" class="btn btn-primary" id="chart-button" onclick="submit_message()">
+                Submit
+              </button>
+
+              <div class="spinner-border spinner-border-sm" id="chart-spinner" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </div>
           </div>
-
-          <div class="custom-control custom-radio">
-            <input type="radio" id="wifilocation" value=1 name="rb" class="custom-control-input" />
-            <label class="custom-control-label lead" for="wifilocation">Wifi Locations</label>
-          </div>
-
-          <div class="custom-control custom-radio">
-            <input type="radio" id="weekdays" value=2 name="rb" class="custom-control-input" />
-            <label class="custom-control-label lead" for="weekdays">Week Days</label>
-          </div>
-          <div class="custom-control p-5">
-            <button type="button" class="btn btn-primary" id="chart-button" onclick="submit_message()">Submit
-            </button>
-
-            <div class="spinner-border spinner-border-sm" id="chart-spinner" role="status">
-              <span class="sr-only">Loading...</span>
-            </div>
-
-          </div>
-        </div>
-
-        <div class="col-sm-8" id="filter-div">
-          <div id="">
-            <div class="form-group input-group-sm">
-            </div>
-            <div class="form-group input-group-sm">
-              <select id="student_id" class="custom-select"></select>
-            </div>
-
-            <div class="form-group input-group-sm">
-              <select id="wifi_id" class="custom-select"></select>
-            </div>
-
-            <div class="form-group input-group-sm">
-              <select id="weekday_id" class="custom-select">
-                <option value="0">Monday</option>
-                <option value="1">Tuesday</option>
-                <option value="2">Wednesday</option>
-                <option value="3">Thursday</option>
-                <option value="4">Friday</option>
-                <option value="5">Saturday</option>
-                <option value="6">Sunday</option>
-              </select>
-            </div>
-          </div>
-
-          <div id="">
-
-            <div class="form-group input-group-sm">
-            </div>
-
-            <div class="form-group input-group-sm">
-              <label class="lead">Filter by:</label>
-              <select id="filter-select" class="custom-select">
-
-
-              </select>
-            </div>
-
+          <div class="col-md-9 bg-light w-100 h-100 p-3">
+            <div id="chart1" class=""></div>
           </div>
         </div>
-      </div>
-      <br>
-
-      <div id="chart1">
-
       </div>
     </div>
-    </div>
-  </main>
-  {% endblock %} {% block script %}
+  </div>
+
+  {% block script %}
 
   <script>
 
@@ -430,11 +424,13 @@
         let data = [trace1];
 
         let layout = {
-          title: 'Bar Plot'
+          title: 'Bar Plot',
+          paper_bgcolor: "#f9f9f9"
         };
 
+        let config = {responsive: true}
 
-        Plotly.newPlot('chart1', data, layout);
+        Plotly.newPlot('chart1', data, layout, config);
 
 
 
@@ -476,16 +472,16 @@
         let data = [canteen, lab, rc, lt, hostel, cep];
 
         let layout = {
-          title: 'Line Plot'
+          title: 'Line Plot', paper_bgcolor: "#f9f9f9"
         };
 
 
-
-        Plotly.newPlot('chart1', data, layout);
+let config = {responsive: true}
+        Plotly.newPlot('chart1', data, layout, config);
 
       }
-      
-      
+
+
       if (filter == "location_students") {
         let trace1 = {
           x: xydata[0],
@@ -496,11 +492,12 @@
         let data = [trace1];
 
         let layout = {
-          title: 'Bar Plot'
+          title: 'Bar Plot', paper_bgcolor: "#f9f9f9"
         };
 
 
-        Plotly.newPlot('chart1', data, layout);
+        let config = {responsive: true}
+        Plotly.newPlot('chart1', data, layout, config);
 
 
 
@@ -510,24 +507,25 @@
         let loc = {
           x: xydata[0], y: xydata[1][0],
           mode: 'lines+markers',
-          
+
         }
-        
+
 
         let data = [loc];
 
         let layout = {
-          title: 'Line Plot'
+          title: 'Line Plot', paper_bgcolor: "#f9f9f9"
         };
+        let config = {responsive: true}
 
-        Plotly.newPlot('chart1', data, layout);
+        Plotly.newPlot('chart1', data, layout, config);
 
       }
-      
-      
-      
-      
-      
+
+
+
+
+
       $("#chart-spinner").hide();
       $("#chart-button").removeAttr('disabled'); //Use '#' id selector
     }
