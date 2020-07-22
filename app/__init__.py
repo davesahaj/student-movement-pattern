@@ -1,9 +1,10 @@
 from flask import Flask
 app = Flask(__name__)
 from app import routes
+from app import app
 
 
-def create_app(config_class=Config):
+def create_app(config_file='Config.py'):
     # ...
     if not app.debug and not app.testing:
         # ...
