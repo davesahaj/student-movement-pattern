@@ -1,6 +1,2 @@
-.vscode/settings.json
-.gitignore
-data/
-bin/
-*.csv
-*.xlsx
+.vscode
+__pycache__
