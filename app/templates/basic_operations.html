@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
+  <title>Student Movement Analysis</title>
   <!-- font awesone -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
     integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous" />
@@ -85,13 +85,14 @@
             </div>
 
             <div class="custom-control p-5">
-              <button type="button" class="btn btn-primary" id="chart-button" onclick="submit_message()">
+              <button type="button" class="btn btn-primary btn-block" id="chart-button" onclick="submit_message()">
                 Submit
+                <div class="spinner-border spinner-border-sm" id="chart-spinner" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
               </button>
 
-              <div class="spinner-border spinner-border-sm" id="chart-spinner" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
+              
             </div>
           </div>
           <div class="col-md-9 bg-light w-100 h-100 p-3">
@@ -505,7 +506,7 @@ let config = {responsive: true}
 
       if (filter == "location_weekdays") {
         let loc = {
-          x: xydata[0], y: xydata[1][0],
+          x: xydata[0], y: xydata[1],
           mode: 'lines+markers',
 
         }

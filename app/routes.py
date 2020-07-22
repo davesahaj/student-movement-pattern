@@ -3,6 +3,8 @@ from app import app
 import json
 import pandas as pd
 import numpy as np
+import pymongo
+from pymongo import MongoClient
 
 ###############################
 #   PREPROCESSING FUNCTIONS   #
@@ -10,53 +12,52 @@ import numpy as np
 
 
 def findFrequency(lid, sid):
-    fl = df.loc[df['Wifi Id'] == lid]
-    fl = fl.loc[fl['Student ID'] == sid]
+
+    fl = df.loc[(df['Wifi Id'] == lid) & (df['Student ID'] == sid)]    
+    freq = len(fl.index)
+    return (freq)
+
+def findWeekday(sid):
+    count = -1
+    result = []
+    tmp = df.loc[df['Student ID'] == sid]
+
+    for lid in locations:
+        result.append([])
+        count = count+1
+        print(result)
+
+        x = tmp.loc[df['Wifi Id'] == lid]
+        for wid in weekdays:
+            result[count].append(len((x.loc[x['weekday'] == wid].index))) 
+            
+
     
-    freq = fl.index
-    freq = len(freq)
-    return (freq)
+
+    return (result)
+
+def findWeekdayLocation( lid):
+    count = -1
+    result = []
+    tmp = df.loc[df['Wifi Id'] == lid]
+
+    for wid in weekdays:
+        result.append(len((tmp.loc[tmp['weekday'] == wid].index))) 
 
 
-def findWeekday(wid, lid, sid):
-    tmp = df
-    tmp['weekday'] = tmp['Date'].map(get_weekday)
-    tmp = tmp.loc[df['Wifi Id'] == lid]
-    tmp = tmp.loc[tmp['Student ID'] == sid]
-    tmp = tmp.loc[tmp['weekday'] == wid]
-    freq = tmp.index
-    freq = len(freq)
-    print(str(freq) + " " + wid+" "+lid)
-
-    return (freq)
-
-def findWeekdayLocation(wid, lid):
-    tmp = df
-    tmp['weekday'] = tmp['Date'].map(get_weekday)
-    tmp = tmp.loc[df['Wifi Id'] == lid]
-    tmp = tmp.loc[tmp['weekday'] == wid]
-    freq = tmp.index
-    freq = len(freq)
-    print(str(freq) + " " + wid+" "+lid)
-
-    return (freq)
-
+    return result
 
 def get_dom(dt):
     return dt.day
 
-
 def get_weekday(dt):
     return dt.day_name()
-
 
 def get_date(dt):
     return dt.date()
 
-
 def get_hour(dt):
     return dt.hour
-
 
 def get_minute(dt):
     return dt.minute
@@ -66,9 +67,18 @@ def get_minute(dt):
 # Excel file to read
 df = pd.read_excel('test.xlsx')
 
+
+#Atlas Connection
+#cluster = MongoClient("mongodb+srv://manav:manav1234@cluster0-b4jm1.mongodb.net/Data?retryWrites=true&w=majority")
+#db = cluster.Data
+#collection = db.Final
+#df = pd.DataFrame(list(collection.find()))
+print("Database fetched")
+
 # preprocessing dataframe
 df['Date'] = df['Date'].astype('datetime64[ns]')
-df = df.sort_values(by='Date')
+#df = df.sort_values(by='Date')
+df['weekday'] = df['Date'].map(get_weekday)
 
 # locations IDs
 locations = ['Canteen', 'Hostel', 'CEP', 'LAB', 'RC', 'LT']
@@ -81,21 +91,22 @@ weekdays = ['Monday', 'Tuesday', 'Wednesday',
 students = df['Student ID'].unique()
 students.sort()
 
-students_tmp = []
-for i in students:
-    students_tmp.append(i)
+# students_tmp = []
+# for i in students:
+#     students_tmp.append(i)
 
 # Dates list
 dates = df['Date'].dt.date.unique()
 dates.astype('datetime64[ns]')
 
 
-# Date format for slider
-date_mark = {i: dates[i] for i in range(0, len(dates))}
-for i in date_mark:
-    date_mark[i] = date_mark[i].strftime('%m/%d/%Y')
-    date_mark[i] = date_mark[i][0:5]
+# # Date format for slider
+# date_mark = {i: dates[i] for i in range(0, len(dates))}
+# for i in date_mark:
+#     date_mark[i] = date_mark[i].strftime('%m/%d/%Y')
+#     date_mark[i] = date_mark[i][0:5]
 
+print("Data Preprocessed")
 
 #test#
 
@@ -104,10 +115,10 @@ for i in date_mark:
 
 
 # decorators
+
+print("Server Started")
 @app.route('/')
 def home():
-
-    user = {'username': 'sahaj'}
     return render_template('basic_operations.html', student_ids=list(students), wifi_ids=json.dumps(locations))
 
 
@@ -132,16 +143,8 @@ def updateStudentChart():
 
     if req['filter'] == 'weekdays':
         x_data = weekdays
-        y_data = []
-
-        tmp = []
-
-        for wifi in locations:
-            for day in x_data:
-                tmp.append(findWeekday(day, wifi, int(req['student_id'])))
-            y_data.append(tmp)
-            tmp = []
-
+        y_data = findWeekday(int(req['student_id']))
+          
         print(y_data)
 
         res_data = [x_data, y_data]
@@ -174,16 +177,8 @@ def updateLocationChart():
 
     if req['filter'] == 'weekdays':
         x_data = weekdays
-        y_data = []
-
-        tmp = []
-
-
-        for day in x_data:
-            tmp.append(findWeekdayLocation(day, req['wifi_id']))
-        y_data.append(tmp)
-        tmp = []
-
+        y_data = findWeekdayLocation( req['wifi_id'])
+        
         print(y_data)
 
         res_data = [x_data, y_data]
@@ -194,38 +189,4 @@ def updateLocationChart():
 
 @app.route("/weekdaywise", methods=["POST"])
 def updateWeekdayChart():
-
-    req = request.get_json()
-    print(req['student_id'])
-    print(req['filter'])
-
-    if req['filter'] == 'location':
-        x_data = locations
-        y_data = []
-
-        for wifi in x_data:
-            y_data.append(findFrequency(wifi, int(req['student_id'])))
-
-        res_data = [x_data, y_data]
-        res = make_response(jsonify(res_data), 200)
-
-        return res
-
-    if req['filter'] == 'weekdays':
-        x_data = weekdays
-        y_data = []
-
-        tmp = []
-
-        for wifi in locations:
-            for day in x_data:
-                tmp.append(findWeekday(day, wifi, int(req['student_id'])))
-            y_data.append(tmp)
-            tmp = []
-
-        print(y_data)
-
-        res_data = [x_data, y_data]
-        res = make_response(jsonify(res_data), 200)
-
-        return res
+    print("NULL")
