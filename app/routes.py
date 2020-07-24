@@ -40,7 +40,6 @@ def findWeekdayLocation( lid):
     count = -1
     result = []
     tmp = df.loc[df['Wifi Id'] == lid]
-
     for wid in weekdays:
         result.append(len((tmp.loc[tmp['weekday'] == wid].index))) 
 
