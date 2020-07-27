@@ -30,10 +30,7 @@ def findWeekday(sid):
         x = tmp.loc[df['Wifi Id'] == lid]
         for wid in weekdays:
             result[count].append(len((x.loc[x['weekday'] == wid].index))) 
-            
-
-    
-
+  
     return (result)
 
 def findWeekdayLocation( lid):
@@ -43,9 +40,37 @@ def findWeekdayLocation( lid):
     for wid in weekdays:
         result.append(len((tmp.loc[tmp['weekday'] == wid].index))) 
 
-
     return result
 
+def findDistribution( lf,lt):
+   
+    count = 0
+    tmp = df.loc[(df['Wifi Id'] == lf) | (df['Wifi Id'] == lt)]  
+    result = [0,0,0,0,0,0,0]
+    
+    for i in range(1, tmp.shape[0]):
+        rowSeries = tmp.iloc[i]
+        nextRowSeries = tmp.iloc[i-1]
+        if((rowSeries['Wifi Id'] == lf) & (nextRowSeries['Wifi Id']==lt)):
+            if rowSeries['weekday'] == weekdays[0]:
+                result[0] = result[0]+1
+            elif rowSeries['weekday'] == weekdays[1]:
+                result[1] = result[1]+1
+            elif rowSeries['weekday'] == weekdays[2]:
+                result[2] = result[2]+1
+            elif rowSeries['weekday'] == weekdays[3]:
+                result[3] = result[3]+1
+            elif rowSeries['weekday'] == weekdays[4]:
+                result[4] = result[4]+1
+            elif rowSeries['weekday'] == weekdays[5]:
+                result[5] = result[5]+1
+            elif rowSeries['weekday'] == weekdays[6]:
+                result[6] = result[6]+1
+           
+           
+
+    return(result)
+    
 def get_dom(dt):
     return dt.day
 
@@ -64,6 +89,8 @@ def get_minute(dt):
 
 
 # Excel file to read
+
+print("Fetching Database...\n")
 df = pd.read_excel('test.xlsx')
 
 
@@ -72,7 +99,7 @@ df = pd.read_excel('test.xlsx')
 #db = cluster.Data
 #collection = db.Final
 #df = pd.DataFrame(list(collection.find()))
-print("Database fetched")
+print("Database fetched\n")
 
 # preprocessing dataframe
 df['Date'] = df['Date'].astype('datetime64[ns]')
@@ -105,17 +132,10 @@ dates.astype('datetime64[ns]')
 #     date_mark[i] = date_mark[i].strftime('%m/%d/%Y')
 #     date_mark[i] = date_mark[i][0:5]
 
-print("Data Preprocessed")
-
-#test#
-
-
-# endtest
-
+print("Data ready...\n")
 
 # decorators
-
-print("Server Started")
+print("Server ready to access.\n")
 @app.route('/')
 def home():
     return render_template('basic_operations.html', student_ids=list(students), wifi_ids=json.dumps(locations))
@@ -125,6 +145,7 @@ def home():
 def updateStudentChart():
 
     req = request.get_json()
+    print("Data received...\n")
     print(req['student_id'])
     print(req['filter'])
 
@@ -144,8 +165,6 @@ def updateStudentChart():
         x_data = weekdays
         y_data = findWeekday(int(req['student_id']))
           
-        print(y_data)
-
         res_data = [x_data, y_data]
         res = make_response(jsonify(res_data), 200)
 
@@ -156,6 +175,7 @@ def updateStudentChart():
 def updateLocationChart():
 
     req = request.get_json()
+    print("Data received...\n")
     print(req['wifi_id'])
     print(req['filter'])
 
@@ -166,8 +186,6 @@ def updateLocationChart():
         for student in x_data:
             y_data.append(findFrequency(req['wifi_id'], student))
 
-        print(x_data)
-        print(y_data)
 
         res_data = [x_data, y_data]
         res = make_response(jsonify(res_data), 200)
@@ -178,7 +196,6 @@ def updateLocationChart():
         x_data = weekdays
         y_data = findWeekdayLocation( req['wifi_id'])
         
-        print(y_data)
 
         res_data = [x_data, y_data]
         res = make_response(jsonify(res_data), 200)
@@ -186,6 +203,18 @@ def updateLocationChart():
         return res
 
 
-@app.route("/weekdaywise", methods=["POST"])
-def updateWeekdayChart():
-    print("NULL")
+@app.route("/distributionwise", methods=["POST"])
+def updateDistributionChart():
+    req = request.get_json()
+
+    print("Data received...\n")
+    print(req['location_from'])
+    print(req['location_to'])
+
+    x_data = weekdays
+    y_data = findDistribution( req['location_from'],req['location_to'])
+
+    res_data = [x_data, y_data]
+    res = make_response(jsonify(res_data), 200)
+
+    return res

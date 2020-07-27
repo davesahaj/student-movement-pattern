@@ -25,10 +25,9 @@
         STUDENT MOVEMENT ANALYSIS
       </h3>
       <div class="col-md-12">
-        
+
         <div class="row p-1 ">
-          <div class="col-md-3 bg-light border rounded-lg shadow"
-          >
+          <div class="col-md-3 bg-light border rounded-lg shadow">
             <p class="mb-0">Select Type:</p>
 
             <br />
@@ -45,13 +44,13 @@
               </div>
 
               <div class="custom-control custom-radio">
-                <input type="radio" id="weekdays" value="2" name="rb" class="custom-control-input" />
-                <label class="custom-control-label lead" for="weekdays">Week Days</label>
+                <input type="radio" id="distribution" value="2" name="rb" class="custom-control-input" />
+                <label class="custom-control-label lead" for="distribution">Distribution</label>
               </div>
             </div>
 
             <div id="filter-div">
-              <div id="">
+              <div id="filter-div-main">
                 <div class="form-group input-group-sm"></div>
                 <div class="form-group input-group-sm">
                   <select id="student_id" class="custom-select"></select>
@@ -72,9 +71,22 @@
                     <option value="6">Sunday</option>
                   </select>
                 </div>
+
+                <div id="distribution-filters">
+                  <p class="mb-0">From:</p>
+                  <div class="form-group input-group-sm">
+                    <select id="distribution_wifi_id_from" class="custom-select"></select>
+                  </div>
+                  <p class="mb-0">To:</p>
+                  <div class="form-group input-group-sm">
+                    <select id="distribution_wifi_id_to" class="custom-select"></select>
+                  </div>
+                </div>
+
+
               </div>
 
-              <div id="">
+              <div id="filter-div-filter">
                 <div class="form-group input-group-sm"></div>
 
                 <div class="form-group input-group-sm">
@@ -92,7 +104,7 @@
                 </div>
               </button>
 
-              
+
             </div>
           </div>
           <div class="col-md-9 bg-light w-100 h-100 p-3">
@@ -110,6 +122,8 @@
     //onload
     $("#filter-div").hide();
     $("#chart-spinner").hide();
+    $("#distribution-filters").hide();
+    $("#chart-button").attr('disabled', 'disabled');
     //end onload
 
 
@@ -148,6 +162,7 @@
                 console.log(
                   `Looks like there was a problem. Status code: ${response.status}`
                 );
+                alert("Network Error, Please Try Again");
                 return;
               }
               response.json().then(function (data) {
@@ -183,6 +198,7 @@
                 console.log(
                   `Looks like there was a problem. Status code: ${response.status}`
                 );
+                alert("Network Error, Please Try Again");
                 return;
               }
               response.json().then(function (data) {
@@ -224,6 +240,7 @@
                 console.log(
                   `Looks like there was a problem. Status code: ${response.status}`
                 );
+                alert("Network Error, Please Try Again");
                 return;
               }
               response.json().then(function (data) {
@@ -259,6 +276,7 @@
                 console.log(
                   `Looks like there was a problem. Status code: ${response.status}`
                 );
+                alert("Network Error, Please Try Again");
                 return;
               }
               response.json().then(function (data) {
@@ -274,16 +292,18 @@
         }
 
       }
-      if (radioOption == 2)//weekday
+      if (radioOption == 2)//distribution
       {
-        let weekday_id = document.getElementById("weekday_id");
-        if (filterSelect == "location") {
+        let location_from = document.getElementById("distribution_wifi_id_from");
+        let location_to = document.getElementById("distribution_wifi_id_to");
+
+        if (location_from.value != location_to.value) {
           let entry = {
-            weekday_id: weekday_id.value,
-            "filter": "location"
+            location_from: location_from.value,
+            location_to: location_to.value,
           };
 
-          fetch(`${window.origin}/weekdaywise`, {
+          fetch(`${window.origin}/distributionwise`, {
             method: "POST",
             credentials: "include",
             body: JSON.stringify(entry),
@@ -297,53 +317,24 @@
                 console.log(
                   `Looks like there was a problem. Status code: ${response.status}`
                 );
+                alert("Network Error, Please Try Again");
                 return;
               }
               response.json().then(function (data) {
                 console.log(data);
-                makeChart(data, "students_location")
+                makeChart(data, "distribution")
 
               });
             })
             .catch(function (error) {
               console.log("Fetch error: " + error);
             });
-
         }
 
-        if (filterSelect == "weekdays") {
-
-          let entry = {
-            student_id: student_id.value,
-            "filter": "weekdays"
-          };
-
-          fetch(`${window.origin}/studentwise`, {
-            method: "POST",
-            credentials: "include",
-            body: JSON.stringify(entry),
-            cache: "no-cache",
-            headers: new Headers({
-              "content-type": "application/json",
-            }),
-          })
-            .then(function (response) {
-              if (response.status !== 200) {
-                console.log(
-                  `Looks like there was a problem. Status code: ${response.status}`
-                );
-                return;
-              }
-              response.json().then(function (data) {
-                console.log(data);
-                makeChart(data, "students_weekdays")
-
-              });
-            })
-            .catch(function (error) {
-              console.log("Fetch error: " + error);
-            });
-
+        else {
+          alert("Both locations cannot be same.")
+          $("#chart-button").removeAttr('disabled');
+          $("#chart-spinner").hide();
         }
 
       }
@@ -374,62 +365,78 @@
         option.text = data[i]
         dropdown.add(option)
       }
+
+      //distribution wifis
+      $('#wifi_id option').clone().appendTo('#distribution_wifi_id_from');
+      $('#wifi_id option').clone().appendTo('#distribution_wifi_id_to');
+
     }
     //end populate
 
     //radio buttons selection
     $("#student").click(function () {
+      $("#chart-button").removeAttr('disabled');
       $("#wifi_id").hide();
       $("#student_id").show();
       $("#weekday_id").hide();
+      $("#distribution-filters").hide();
       $("#filter-div").show();
+      $("#filter-div-filter").show();
 
       $("#filter-select").empty()
         .append('<option selected="selected" value="location">Wifi Location</option><option value="weekdays">Week Days</option>');
 
     });
     $("#wifilocation").click(function () {
+      $("#chart-button").removeAttr('disabled');
       $("#student_id").hide();
       $("#wifi_id").show();
       $("#weekday_id").hide();
+      $("#distribution-filters").hide();
       $("#filter-div").show();
+      $("#filter-div-filter").show();
 
       $("#filter-select").empty()
         .append('<option selected="selected" value="students">Students</option><option value="weekdays">Week Days</option>');
 
     });
-    $("#weekdays").click(function () {
+    $("#distribution").click(function () {
+      $("#chart-button").removeAttr('disabled');
       $("#student_id").hide();
       $("#wifi_id").hide();
-      $("#weekday_id").show();
+      $("#weekday_id").hide();
+      $("#filter-div-filter").hide();
+      $("#distribution-filters").show();
 
       $("#filter-div").show();
-
-      $("#filter-select").empty()
-        .append('<option selected="selected" value="location">Wifi Location</option><option value="students">Students</option>');
-
     });
     //end radio buttons
 
     // plotly chart
     function makeChart(xydata, filter) {
 
-
       if (filter == "students_location") {
         let trace1 = {
-          x: xydata[0],
-          y: xydata[1],
-          type: 'bar'
+          type: "pie",
+          values: xydata[1],
+          labels: ["Canteen", "Hostel", "Cep", "Lab", "Rc", "Lt"],
+          textinfo: "label+percent",
+          textposition: "outside",
+          automargin: true
         };
 
         let data = [trace1];
 
         let layout = {
-          title: 'Bar Plot',
+          title: 'Students Location Distribution',
           paper_bgcolor: "#f9f9f9"
+          //height: 400,
+          //width: 400,
+          //margin: {"t": 0, "b": 0, "l": 0, "r": 0},
+          //showlegend: false
         };
 
-        let config = {responsive: true}
+        let config = { responsive: true, displaylogo: false }
 
         Plotly.newPlot('chart1', data, layout, config);
 
@@ -440,32 +447,32 @@
       if (filter == "students_weekdays") {
         let canteen = {
           x: xydata[0], y: xydata[1][0],
-          mode: 'lines+markers',
+          type: "bar",
           name: "Canteen"
         }
         let hostel = {
           x: xydata[0], y: xydata[1][1],
-          mode: 'lines+markers',
+          type: "bar",
           name: "Hostel"
         }
         let cep = {
           x: xydata[0], y: xydata[1][2],
-          mode: 'lines+markers',
+          type: "bar",
           name: "CEP"
         }
         let lab = {
           x: xydata[0], y: xydata[1][3],
-          mode: 'lines+markers',
+          type: "bar",
           name: "LAB"
         }
         let rc = {
           x: xydata[0], y: xydata[1][4],
-          mode: 'lines+markers',
+          type: "bar",
           name: "RC"
         }
         let lt = {
           x: xydata[0], y: xydata[1][5],
-          mode: 'lines+markers',
+          type: "bar",
           name: "LT"
         }
 
@@ -473,15 +480,14 @@
         let data = [canteen, lab, rc, lt, hostel, cep];
 
         let layout = {
-          title: 'Line Plot', paper_bgcolor: "#f9f9f9"
+          title: 'Location - Students Weekly Distribution', paper_bgcolor: "#f9f9f9", barmode: "group"
         };
 
 
-let config = {responsive: true}
+        let config = { responsive: true, displaylogo: false }
         Plotly.newPlot('chart1', data, layout, config);
 
       }
-
 
       if (filter == "location_students") {
         let trace1 = {
@@ -493,11 +499,11 @@ let config = {responsive: true}
         let data = [trace1];
 
         let layout = {
-          title: 'Bar Plot', paper_bgcolor: "#f9f9f9"
+          title: 'Location - Students Distribution', paper_bgcolor: "#f9f9f9"
         };
 
 
-        let config = {responsive: true}
+        let config = { responsive: true, displaylogo: false }
         Plotly.newPlot('chart1', data, layout, config);
 
 
@@ -515,17 +521,31 @@ let config = {responsive: true}
         let data = [loc];
 
         let layout = {
-          title: 'Line Plot', paper_bgcolor: "#f9f9f9"
+          title: 'Weekly Location Distribution', paper_bgcolor: "#f9f9f9"
         };
-        let config = {responsive: true}
+        let config = { responsive: true, displaylogo: false }
 
         Plotly.newPlot('chart1', data, layout, config);
 
       }
 
+      if (filter == "distribution") {
+        let result = {
+          x: xydata[0], y: xydata[1],
+          mode: 'lines+markers',
+        }
 
 
+        let data = [result];
 
+        let layout = {
+          title: 'Students Movement Distribution', paper_bgcolor: "#f9f9f9"
+        };
+        let config = { responsive: true, displaylogo: false }
+
+        Plotly.newPlot('chart1', data, layout, config);
+
+      }
 
       $("#chart-spinner").hide();
       $("#chart-button").removeAttr('disabled'); //Use '#' id selector
